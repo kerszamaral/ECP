@@ -1,26 +1,26 @@
 // Ian Kersz - Cartão ufrgs: 00338368
 // 08.03.22
-//Ler teclado e fazer Led acender
+//Botão
 
 int ledPin = 13;
+int buttonPin = 8;
 
 void setup()
 {
     pinMode(ledPin,OUTPUT);
-    Serial.begin(9600);
+    pinMode(buttonPin,INPUT);
 }
 
 void loop()
 {
-    char tecla;
+    int x;
+    x = digitalRead(buttonPin);
 
-    tecla = Serial.read();
-
-    if (tecla == 'l')
+    if (x == 1)
     {
         digitalWrite(ledPin,HIGH);
     }
-    else if( tecla == 'd')
+    else if(x == 0)
     {
         digitalWrite(ledPin,LOW);
     }
