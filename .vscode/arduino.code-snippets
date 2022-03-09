@@ -18,7 +18,7 @@
 	"Template de arduino":{
 		"prefix": "Templatearduino",
 		"body": [
-			"// Ian Kersz - Cartão ufrgs: 00338368",
+			"// Ian Kersz - Cartão UFRGS: 00338368",
 			"// 00.03.22",
 			"",
 			"void setup()",
