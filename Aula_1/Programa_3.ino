@@ -1,29 +1,22 @@
 //Ian Kersz - Cartão UFRGS: 00338368
 //08.03.22
-//4 lEDs acendem em ordem crescente e apagam em ordem decrescente,
-//Ao pressionar o botão, os 4 lEDs viram um contador de 4 bits(ou seja, 16 numeros)
+
+//LEDs acendem em ordem crescente e apagam em ordem decrescente,
+//Ao pressionar o botão, os lEDs viram um contador de bits
 //Após isso, retornam a sua função normal 
 
-//Definição da quantidade de lEDs(-1) e definição do tempo de delay em milisegundos
-//É possivel fazer o contador ter quantos bits quiser, 
-//basta incrementar o TAM(Será sempre o numero de LEDs -1) e adicionar a porta ao array
-#define TAM 3
-#define TEM 1000
+//Variaveis e Definições globais (É possivel fazer o contador ter quantos bits quiser) 
+#define TAM 3   //Quantidade de LEDs (sempre -1 do que no real)
+#define TEM 1000    //Delay de todas as atividades em Millisegundos
+int led[TAM + 1] = {12,11,10,9};  //Adicionar portas dos LEDs
+int buttonPin = 2; //Porta do botão
 
-//Definição das variaveis globais, que são as portas dos LEDs e do botão
-int led[TAM+1] = {12,11,10,9};
-int buttonPin = 2;
-
-//Criação da função para apagar todos os LEDs
-void TODOS(int estado)
+void TODOS(int estado)  //Criação da função para apagar todos os LEDs
 {
     for (int i = TAM; i >= 0; i--)
-    {
         digitalWrite(led[i], estado);
-    }
 }
-//Criação da função para fazer os LEDs piscarem
-void PISCAR(char ordem, int estado)
+void PISCAR(char ordem, int estado) //Criação da função para fazer os LEDs piscarem
 {
     if (ordem == 'c') //Ordem crescente
     {
@@ -33,8 +26,7 @@ void PISCAR(char ordem, int estado)
             //caso o botão seja pressionado no meio da função
             if (digitalRead(buttonPin) == 1)
             return;
-            //Delay mais curto
-            delay(TEM / 2);
+            delay(TEM / 2); //Delay mais curto
         }
     }
     else if (ordem == 'd') //Ordem decrescente
@@ -45,61 +37,48 @@ void PISCAR(char ordem, int estado)
             //caso o botão seja pressionado no meio da função
             if (digitalRead(buttonPin) == 1)
                 return;
-            //Delay mais curto
-            delay(TEM / 2);
+            delay(TEM / 2); //Delay mais curto
         }
     }
-    
 }
-//Criação da função para fazer os LEDs serem um contador de 4 bits
-void CONTADOR()
+void CONTADOR() //Criação da função para LEDs serem um contador de 4 bits
 {
-    //Definição do array para contar os bits
-    int arr[TAM+1] = {0};
-    //Loop para contar até 16
-    for (int i = 0; i < pow(2,TAM+1); i++)
+    int arr[TAM + 1] = {0};   //Definição do array para contar os bits
+    
+    for (int i = 0; i < pow(2, TAM + 1); i++)  //Loop para contar até 16
     {
-        //Matematica para configurar qual LED está aceso no array ou não naquele momento
-        for (int j = TAM; j >= 0; j--)
-        {
-            arr[j]= i / (int)ceil(pow(2,TAM-j)) % 2;
-        }
-        //Loop para acender ou apagar o LED da posição j em função do bit localizado em j
-        for (int j = 0; j <= TAM; j++)
+        for (int j = TAM; j >= 0; j--)  //Matematica para configurar Posição On/Off no array
+            arr[j]= i / (int)ceil(pow(2, TAM - j)) % 2;
+        
+        for (int j = 0; j <= TAM; j++)  //Loop On/Off LED da posição j
         {
             if (arr[j] == 1)
-            {
-                digitalWrite(led[j], HIGH);
-            }
+                digitalWrite(led[j], 1);
             else
-            {
-                digitalWrite(led[j], LOW);
-            }
+                digitalWrite(led[j], 0);
         }
         delay(TEM);
     }
     TODOS(0);
+    delay(TEM / 2);
 }
-//Setup das portas do arduino
-void setup()
+
+void setup()    //Setup das portas do arduino
 {
-    //Loop para configurar todos os LEDs e depois o botão
-    for (int i = 0; i <= TAM; i++)
-    {
+    for (int i = 0; i <= TAM; i++)  //Loop para configurar todos os LEDs e botão
         pinMode(led[i], OUTPUT);
-    }
+
     pinMode(buttonPin, INPUT);
 }
-//Loop de execução do arduino
-void loop()
+
+void loop() //Loop de execução do arduino
 {
-    //Função para ver se o botão está pressionado ou não
-    switch (digitalRead(buttonPin))
+    switch (digitalRead(buttonPin)) //Função para ver se o botão está pressionado ou não
     {
     case 1: //Caso sim, inicia o contador
         CONTADOR();
         break;
-    case 0: //caso não, inicia piscar
+    case 0: //Caso não, inicia piscar, com Ordem e estado desejado
         PISCAR('c',1);
         PISCAR('d',0);
         break;
