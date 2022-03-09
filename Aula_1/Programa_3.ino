@@ -15,37 +15,41 @@ int led[TAM+1] = {12,11,10,9};
 int buttonPin = 2;
 
 //Criação da função para apagar todos os LEDs
-void APAGAR()
+void TODOS(int estado)
 {
     for (int i = TAM; i >= 0; i--)
     {
-        digitalWrite(led[i], LOW);
-        
+        digitalWrite(led[i], estado);
     }
 }
 //Criação da função para fazer os LEDs piscarem
-void PISCAR()
+void PISCAR(char ordem, int estado)
 {
-    //Ordem crescente
-    for (int i = TAM; i >= 0; i--)
+    if (ordem == 'c') //Ordem crescente
     {
-        digitalWrite(led[i], HIGH);
-        //caso o botão seja pressionado no meio da função
-        if (digitalRead(buttonPin) == 1)
+        for (int i = TAM; i >= 0; i--)
+        {
+            digitalWrite(led[i], estado);
+            //caso o botão seja pressionado no meio da função
+            if (digitalRead(buttonPin) == 1)
             return;
-        //Delay mais curto
-        delay(TEM / 2);
+            //Delay mais curto
+            delay(TEM / 2);
+        }
     }
-    //Ordem decrescente
-    for (int i = 0; i <= TAM; i++)
+    else if (ordem == 'd') //Ordem decrescente
     {
-        digitalWrite(led[i], LOW);
-        //caso o botão seja pressionado no meio da função
-        if (digitalRead(buttonPin) == 1)
-            return;
-        //Delay mais curto
-        delay(TEM / 2);
+        for (int i = 0; i <= TAM; i++)
+        {
+            digitalWrite(led[i], estado);
+            //caso o botão seja pressionado no meio da função
+            if (digitalRead(buttonPin) == 1)
+                return;
+            //Delay mais curto
+            delay(TEM / 2);
+        }
     }
+    
 }
 //Criação da função para fazer os LEDs serem um contador de 4 bits
 void CONTADOR()
@@ -74,7 +78,7 @@ void CONTADOR()
         }
         delay(TEM);
     }
-    APAGAR();
+    TODOS(0);
 }
 //Setup das portas do arduino
 void setup()
@@ -96,7 +100,8 @@ void loop()
         CONTADOR();
         break;
     case 0: //caso não, inicia piscar
-        PISCAR();
+        PISCAR('c',1);
+        PISCAR('d',0);
         break;
     }
 }
