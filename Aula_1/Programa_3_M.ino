@@ -4,13 +4,14 @@
 //LEDs acendem em ordem crescente e apagam em ordem decrescente,
 //Ao pressionar o botão, os lEDs viram um contador de bits
 //Após isso, retornam a sua função normal 
+//Agora sem mais o bugo do delay!
 
 //Variaveis e Definições globais (É possivel fazer o contador ter quantos bits quiser) 
 #define TAM 3   //Quantidade de LEDs (sempre -1 do que no real)
 #define TEM 1000    //Delay de todas as atividades em Millisegundos
 const int led[TAM + 1] = {12,11,10,9};  //Adicionar portas dos LEDs
 const int buttonPin = 2; //Porta do botão
-unsigned long previousMillis = 0;
+unsigned long previousMillis = 0;   //variavel para o delay
 int k = TAM, l = 0; //Variaveis utilizada para piscar
 
 void TODOS(int estado)  //Criação da função para apagar todos os LEDs
@@ -51,26 +52,25 @@ void setup()    //Setup das portas do arduino
 
 void loop() //Loop de execução do arduino
 {
-    unsigned long currentMillis = millis();
-    if (currentMillis - previousMillis >= TEM/3) 
+    unsigned long currentMillis = millis(); //Diz quanto tempo se passou desde a inicialização do arduino
+    if (currentMillis - previousMillis >= TEM/3) //Condicional para o delay sem bug
     {
-        previousMillis = currentMillis;
-        if(l == 0)
+        previousMillis = currentMillis; //Salva para utiliza a diferença na condicional acima
+        if(l == 0)  //Liga os LEDs em ordem crescente
         {
-            if (k == 0)
+            if (k == 0) //Troca a ordem
                 l = 1;
             digitalWrite(led[k], 1);
             k--;
         }
-        if(l == 1)
+        if(l == 1)  //Liga os LEDs em ordem decrescente
         {
-            if (k == TAM)
+            if (k == TAM)   //Troca a ordem
                 l = 0;
             digitalWrite(led[k], 0);
             k++;
         }
     }
-    if (digitalRead(buttonPin) == 1)
+    if (digitalRead(buttonPin) == 1)    //Inicia o contador caso o botão seja pressionao
         CONTADOR();
-    
 }
