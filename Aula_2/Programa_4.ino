@@ -8,6 +8,21 @@
 const int led[5] = {11,10,9,6,5};  //Portas dos LEDs
 const int trigPin = 3, echoPin = 2; //Portas do sensor
 
+int sensor()    //Função para ativar o sensor e converter o tempo para distancia
+{
+    int distancia = 0, duracao = 0;
+
+    digitalWrite(trigPin, 0); 
+    delayMicroseconds(2);
+    digitalWrite(trigPin, 1);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, 0);
+    duracao = pulseIn(echoPin, 1);
+    distancia = (duracao/2.0)*0.034;
+
+    return distancia;   //Retorna a distancia 
+}
+
 void setup()    //Setup das portas do arduino
 {
     for (int i = 0; i <= 4; i++)  //Loop para configurar todos os LEDs e botão
@@ -19,20 +34,16 @@ void setup()    //Setup das portas do arduino
 
 void loop() //Loop de execução do arduino
 {
-    int arr[9] = {0}, k = 9, x = 0, distancia = 0, duracao = 0;   //Definição das variaveis para contar
+    int arr[9] = {0}, k = 9, x = 0, d = 0;   //Definição das variaveis para contar
 
-    digitalWrite(trigPin, 0); //Função para ativar o sensor e converter o tempo para distancia
-    delayMicroseconds(2);
-    digitalWrite(trigPin, 1);
-    delayMicroseconds(10);
-    digitalWrite(trigPin, 0);
-    duracao = pulseIn(echoPin, 1);
-    distancia = (duracao/2.0)*0.034;
-    x = distancia; //Duplicação da variavel distancia em x
+    d = sensor();
+    x = d; //Duplicação da variavel d em x
 
-    if(distancia > 2 && distancia < 32) //Teste para só contar se a distancia é entre 2 e 32 cm
+    if(d > 2 && d < 32) //Teste para só contar se a d é entre 2 e 32 cm
     {
-        while (x!=0) //Transforma a distancia em decimal para binario e coloca no bit correto do array
+        for (int i = 4; i >= 0; i--) //Apaga todos
+            digitalWrite(led[i], 0);
+        while (x!=0) //Transforma a d em decimal para binario e coloca no bit correto do array
         {
             arr[k]=x%2;
             x=x/2;
@@ -47,13 +58,13 @@ void loop() //Loop de execução do arduino
         }
         delay(50);
     }
-    if (distancia >= 32) //Caso a distancia seja maior pisca
+    else //Caso a distancia seja maior pisca
     {
         for (int i = 4; i >= 0; i--) //Apaga todos
             digitalWrite(led[i], 0);
         for (int i = 4; i >= 0; i--) //Acende todos em ordem crescente PWM
         {
-            for (int j = 0; j < 256; j++)
+            for (int j = 0; j <= 255; j++)
             {
                 analogWrite(led[i], j);
                 delay(1);
