@@ -1,45 +1,42 @@
 //Ian Kersz - Cartão UFRGS: 00338368
-//13.03.22
+//15.03.22
 
-//LEDs acendem em ordem crescente e apagam em ordem decrescente,
-//Ao pressionar o botão, os lEDs viram um contador de bits
-//Após isso, retornam a sua função normal 
-//Agora sem mais o bugo do delay!
+//Os LEDs viram um contador de distancia entre 2 e 31cm
+//Após isso, LEDs acendem em ordem crescente e apagam em ordem decrescente gradualmente
 
-//Variaveis e Definições globais (É possivel fazer o contador ter quantos bits quiser) 
-#define TAM 4   //Quantidade de LEDs (sempre -1 do que no real)
-#define TEM 1000    //Delay de todas as atividades em Millisegundos
-const int led[TAM + 1] = {11,10,9,6,5};  //Adicionar portas dos LEDs
-const int trigPin = 3, echoPin = 2; //Porta do botão
+//Variaveis e Definições globais
+const int led[5] = {11,10,9,6,5};  //Portas dos LEDs
+const int trigPin = 3, echoPin = 2; //Portas do sensor
 
 void setup()    //Setup das portas do arduino
 {
-    Serial.begin(9600);
-    for (int i = 0; i <= TAM; i++)  //Loop para configurar todos os LEDs e botão
+    for (int i = 0; i <= 4; i++)  //Loop para configurar todos os LEDs e botão
         pinMode(led[i], OUTPUT);
 
-    pinMode(trigPin, OUTPUT);
-    pinMode(echoPin, INPUT);
+    pinMode(trigPin, OUTPUT); //Output pin do sensor
+    pinMode(echoPin, INPUT); //Input pin do sensor
 }
-int duracao = 0, distancia = 0;
+
 void loop() //Loop de execução do arduino
 {
-    digitalWrite(trigPin,0);
+    int arr[9] = {0}, k = 9, x = 0, distancia = 0, duracao = 0;   //Definição das variaveis para contar
+
+    digitalWrite(trigPin, 0); //Função para ativar o sensor e converter o tempo para distancia
     delayMicroseconds(2);
-    digitalWrite(trigPin,1);
+    digitalWrite(trigPin, 1);
     delayMicroseconds(10);
-    digitalWrite(trigPin,0);
+    digitalWrite(trigPin, 0);
     duracao = pulseIn(echoPin, 1);
     distancia = (duracao/2.0)*0.034;
-    
-    int arr[9] = {0}, i = 9, y = 0, x = distancia;   //Definição do array para contar os bits
-    if(distancia >= 2 && distancia <=31){
-        while (x!=0)
+    x = distancia; //Duplicação da variavel distancia em x
+
+    if(distancia > 2 && distancia < 32) //Teste para só contar se a distancia é entre 2 e 32 cm
+    {
+        while (x!=0) //Transforma a distancia em decimal para binario e coloca no bit correto do array
         {
-            y=x%2;
+            arr[k]=x%2;
             x=x/2;
-            arr[i]=y;
-            i--;
+            k--;
         }
         for (int j = 0; j <= 9; j++)  //Loop On/Off LED da posição j
         {
@@ -48,24 +45,27 @@ void loop() //Loop de execução do arduino
             else
                 digitalWrite(led[j-5], 0);
         }
+        delay(50);
     }
-    if (distancia >= 32)
+    if (distancia >= 32) //Caso a distancia seja maior pisca
     {
-        for (int i = 4; i >= 0; i--){
-            for (int j = 0; j < 256; j++){
+        for (int i = 4; i >= 0; i--) //Apaga todos
+            digitalWrite(led[i], 0);
+        for (int i = 4; i >= 0; i--) //Acende todos em ordem crescente PWM
+        {
+            for (int j = 0; j < 256; j++)
+            {
                 analogWrite(led[i], j);
-                delay(TEM / 1000);
+                delay(1);
             }
         }
-        for (int i = 0; i < 5; i++){
-            for (int j = 255; j >= 0; j--){
+        for (int i = 0; i < 5; i++) //Apaga todos em ordem decrescente PWM
+        {
+            for (int j = 255; j >= 0; j--)
+            {
                 analogWrite(led[i], j);
-                delay(TEM / 1000);
+                delay(1);
             }
         }
     }
-    delay(50);
-    // entre 32 e 340
-    // 5 leds
-    //255 niveis por led
 }
