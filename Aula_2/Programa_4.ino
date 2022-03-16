@@ -24,6 +24,14 @@ int sensor()    //Função para ativar o sensor e converter o tempo para distanc
     return distancia;   //Retorna a distancia 
 }
 
+void reset() //Função para resetar as variaveis do fade
+{
+    l = 0;
+    m = 4;
+    fade = 15;
+    bri = 0;
+}
+
 void setup()    //Setup das portas do arduino
 {
     for (int i = 0; i <= 4; i++)  //Loop para configurar todos os LEDs
@@ -42,8 +50,6 @@ void loop() //Loop de execução do arduino
 
     if(d > 2 && d < 32) //Teste para só contar se a d é entre 2 e 32 cm
     {
-        for (int i = 4; i >= 0; i--) //Apaga todos
-            digitalWrite(led[i], 0);
         while (x!=0) //Transforma a d em decimal para binario e coloca no bit correto do array
         {
             arr[k] = x % 2;
@@ -58,6 +64,9 @@ void loop() //Loop de execução do arduino
                 digitalWrite(led[j-5], 0);
         }
         delay(50);
+        for (int i = 4; i >= 0; i--) //Apaga todos
+            digitalWrite(led[i], 0);
+        reset();
     }
     else //Caso a distancia seja maior pisca
     {   
@@ -83,12 +92,7 @@ void loop() //Loop de execução do arduino
         if (m == -1) //Troca o sinal da variação pra poder apagar em ordem reversa
             fade = -fade;
         if (m == 5) //Reset do Loop inteiro de LEDs
-        {
-            l = 0;
-            m = 4;
-            fade = -fade;
-            bri = 0;
-        }
+            reset();
         delay(5);
     }
 }
