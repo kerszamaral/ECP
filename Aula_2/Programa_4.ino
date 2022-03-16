@@ -36,8 +36,7 @@ void loop() //Loop de execução do arduino
 {
     int arr[9] = {0}, k = 9, x = 0, d = 0;   //Definição das variaveis para contar
 
-    d = sensor();
-    x = d; //Duplicação da variavel d em x
+    x = d = sensor();; //Duplicação da variavel d em x
 
     if(d > 2 && d < 32) //Teste para só contar se a d é entre 2 e 32 cm
     {
