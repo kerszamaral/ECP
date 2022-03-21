@@ -9,9 +9,9 @@ const int led[5] = {11, 10, 9, 6, 5};  //Portas dos LEDs
 const int trigPin = 3, echoPin = 2; //Portas do sensor
 int bri = 0, fade = 15, m = 4, l = 0; // Brightness, o quanto PWM varia, contadores pros LEDs
 
-int sensor()    //Função para ativar o sensor e converter o tempo para distancia
+float sensor()    //Função para ativar o sensor e converter o tempo para distancia
 {
-    int distancia = 0, dur = 0;
+    float distancia = 0, dur = 0;
 
     digitalWrite(trigPin, 0); 
     delayMicroseconds(2);
@@ -19,7 +19,7 @@ int sensor()    //Função para ativar o sensor e converter o tempo para distanc
     delayMicroseconds(10);
     digitalWrite(trigPin, 0);
     dur = pulseIn(echoPin, 1);
-    distancia = (dur / 2.0) * 0.034;
+    distancia = (dur / 2.0) * 0.034029;
 
     return distancia;   //Retorna a distancia 
 }
@@ -34,6 +34,7 @@ void reset() //Função para resetar as variaveis do fade
 
 void setup()    //Setup das portas do arduino
 {
+    Serial.begin(9600);
     for (int i = 0; i <= 4; i++)  //Loop para configurar todos os LEDs
         pinMode(led[i], OUTPUT);
 
@@ -46,7 +47,7 @@ void loop() //Loop de execução do arduino
     int arr[9] = {0}, k = 9, x = 0, d = 0;   //Definição das variaveis para contar
     //Array de tamanho 9 pois a distancia maxima do sensor é 500 cm, assim não causando overflow (2^9 = 512)
     //Contador só mede até 32 cm
-    x = d = sensor(); //Duplicação da variavel d em x
+    x = d = round(sensor()); //Duplicação da variavel d em x
 
     if(d > 2 && d < 32) //Teste para só contar se a d é entre 2 e 32 cm
     {
